@@ -1,0 +1,44 @@
+# Requirements pour Application d'Automatisation Réseau
+# Installation: pip install -r requirements.txt
+
+# Configuration et gestion YAML
+PyYAML>=6.0.2
+
+# SSH et gestion d'équipements réseau
+paramiko==3.4.0
+cryptography==41.0.7
+
+# Visualisation et dashboards
+plotly==5.18.0
+kaleido==0.2.1
+
+# HTTP et APIs
+requests==2.31.0
+urllib3==2.1.0
+
+# Automatisation réseau (optionnel)
+netmiko==4.3.0
+napalm==4.1.0
+
+# SNMP (optionnel)
+pysnmp==4.4.12
+
+# Manipulation de données
+pandas>=2.2.3
+numpy==1.26.3
+
+# Utilitaires
+python-dateutil==2.8.2
+pytz==2023.3
+
+# Logging avancé
+loguru==0.7.2
+
+# Testing (optionnel)
+pytest==7.4.3
+pytest-cov==4.1.0
+
+# Code quality (optionnel)
+pylint==3.0.3
+black==23.12.1
+flake8==6.1.0

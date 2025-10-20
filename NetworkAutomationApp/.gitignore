@@ -1,0 +1,39 @@
+# Environnement Python
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Fichiers de configuration sensibles
+devices.yaml.local
+*.key
+*.pem
+
+# Fichiers de sortie
+backups/*
+reports/*
+logs/*
+dashboards/*.html
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Système
+.DS_Store
+Thumbs.db
+
+# Tests
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Distribution
+build/
+dist/
+*.egg-info/

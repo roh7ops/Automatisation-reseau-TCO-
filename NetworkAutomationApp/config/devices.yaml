@@ -1,0 +1,95 @@
+# Configuration des équipements réseau
+# Utilise des serveurs Ubuntu virtualisés
+
+devices:
+  # Serveur 1
+  - host: 192.168.226.38
+    username: ubuntu
+    password: ubuntu
+    device_type: linux
+    port: 22
+    name: server-1
+    location: "Datacenter Antananarivo"
+    role: "Web Server"
+
+  # Serveur 2
+  - host: 192.168.1.101
+    username: ubuntu
+    password: ubuntu123
+    device_type: linux
+    port: 22
+    name: server-2
+    location: "Datacenter Antananarivo"
+    role: "Database Server"
+
+  # Serveur 3
+  - host: 192.168.1.102
+    username: ubuntu
+    password: ubuntu123
+    device_type: linux
+    port: 22
+    name: server-3
+    location: "Datacenter Antananarivo"
+    role: "Application Server"
+
+# Configuration des paramètres de monitoring
+monitoring:
+  ping_interval: 10          # Intervalle en secondes entre les pings
+  ping_timeout: 2            # Timeout du ping en secondes
+  ping_count: 4              # Nombre de pings par test
+  snmp_community: "public"   # Communauté SNMP
+  snmp_port: 161             # Port SNMP
+  snmp_version: "2c"         # Version SNMP
+
+# Configuration des seuils d'alerte
+thresholds:
+  latency_warning: 50        # Latence d'avertissement en ms
+  latency_critical: 100      # Latence critique en ms
+  packet_loss_warning: 5     # Perte de paquets d'avertissement en %
+  packet_loss_critical: 10   # Perte de paquets critique en %
+  cpu_warning: 80            # Utilisation CPU d'avertissement en %
+  cpu_critical: 95           # Utilisation CPU critique en %
+  memory_warning: 85         # Utilisation mémoire d'avertissement en %
+  memory_critical: 95        # Utilisation mémoire critique en %
+
+# Configuration pour les backups
+backup:
+  enabled: true
+  directory: "backups"
+  retention_days: 30         # Conserver les backups pendant 30 jours
+  schedule: "daily"          # daily, weekly, monthly
+  time: "02:00"              # Heure du backup (format 24h)
+
+# Configuration des rapports
+reports:
+  enabled: true
+  directory: "reports"
+  formats:
+    - text                   # Rapport texte
+    - json                   # Rapport JSON
+    - html                   # Rapport HTML
+  schedule: "weekly"         # Fréquence des rapports
+  recipients: []             # Email des destinataires
+
+# Configuration des dashboards
+dashboards:
+  enabled: true
+  directory: "dashboards"
+  refresh_interval: 300      # Rafraîchir tous les 5 minutes
+  port: 8050                 # Port pour le serveur Dash (si utilisé)
+
+# Notifications
+notifications:
+  email:
+    enabled: false
+    smtp_server: "smtp.gmail.com"
+    smtp_port: 587
+    from: "alerts@example.com"
+    recipients: ["admin@example.com"]
+  slack:
+    enabled: false
+    webhook_url: ""
+  syslog:
+    enabled: true
+    server: "localhost"
+    port: 514
