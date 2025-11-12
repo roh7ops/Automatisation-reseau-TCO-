@@ -4,6 +4,8 @@ Flask API Backend pour Application d'Automatisation Réseau
 Compatible avec Flask 2.3+
 """
 
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
@@ -20,6 +22,25 @@ app.config['JSON_SORT_KEYS'] = False
 
 db = SQLAlchemy(app)
 CORS(app)
+
+# --- Ajout: servir le frontend build si présent ---
+from flask import send_from_directory, send_file
+import io
+from modules.reports import ReportGenerator
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_frontend(path):
+    build_dir = Path('frontend/build')
+    if build_dir.exists():
+        # sert les fichiers statiques du build React
+        target = build_dir / path
+        if path != "" and target.exists():
+            return send_from_directory(str(build_dir), path)
+        # sinon servir index.html
+        return send_from_directory(str(build_dir), 'index.html')
+    # fallback : API info
+    return jsonify({'message': 'API running. Use /api/health or /api/report/{inventory|performance|audit}'}), 200
 
 # ===== MODÈLES DE BASE DE DONNÉES =====
 
@@ -409,6 +430,84 @@ def health_check():
         'timestamp': datetime.utcnow().isoformat(),
         'version': '1.0.0'
     })
+
+def _text_to_pdf_bytes(text):
+    """Convertit un texte en PDF bytes (pagination simple)."""
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=A4)
+    width, height = A4
+    margin = 40
+    y = height - margin
+    line_height = 12
+    # police
+    c.setFont("Helvetica", 10)
+    for raw_line in text.splitlines():
+        # wrap long lines
+        while len(raw_line) > 100:
+            part = raw_line[:100]
+            c.drawString(margin, y, part)
+            raw_line = raw_line[100:]
+            y -= line_height
+            if y < margin:
+                c.showPage()
+                c.setFont("Helvetica", 10)
+                y = height - margin
+        c.drawString(margin, y, raw_line)
+        y -= line_height
+        if y < margin:
+            c.showPage()
+            c.setFont("Helvetica", 10)
+            y = height - margin
+    c.showPage()
+    c.save()
+    buf.seek(0)
+    return buf.read()
+
+def _latest_report_text(report_type):
+    """Cherche le dernier fichier .txt correspondant au report_type dans reports/; fallback à ReportGenerator."""
+    reports_dir = Path('reports')
+    reports_dir.mkdir(exist_ok=True)
+    pattern = f"{report_type}_report_*.txt"
+    files = list(reports_dir.glob(pattern))
+    if files:
+        latest = max(files, key=lambda p: p.stat().st_mtime)
+        return latest.read_text(encoding='utf-8'), latest.name
+    # fallback: générer via ReportGenerator (génère .txt)
+    rg = ReportGenerator()
+    if report_type == 'inventory' or report_type == 'generate':
+        path = Path(rg.generate_inventory_report({}))  # génère fichier texte vide si pas de données
+    elif report_type == 'performance':
+        path = Path(rg.generate_monitoring_report({}))
+    else:
+        # audit fallback: résumé simple
+        filename = rg.report_dir / f"audit_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+        filename.write_text("Rapport d'audit générique\nAucune donnée collectée.\n", encoding='utf-8')
+        path = filename
+    return path.read_text(encoding='utf-8'), path.name
+
+@app.route('/api/report/<string:report_type>', methods=['GET'])
+def get_report_pdf(report_type):
+    """
+    Retourne le rapport au format PDF.
+    report_type: inventory | performance | audit | generate
+    """
+    report_type = report_type.lower()
+    if report_type == 'generate':
+        report_type = 'inventory'
+    if report_type not in ('inventory', 'performance', 'audit'):
+        return jsonify({'error': 'Type de rapport inconnu'}), 400
+
+    text, txt_name = _latest_report_text(report_type)
+    pdf_bytes = _text_to_pdf_bytes(text)
+    pdf_filename = txt_name.rsplit('.', 1)[0] + '.pdf'
+
+    # renvoyer le PDF en pièce jointe
+    return send_file(
+        io.BytesIO(pdf_bytes),
+        mimetype='application/pdf',
+        as_attachment=True,
+        download_name=pdf_filename
+    )
 
 if __name__ == '__main__':
     # Initialiser la BD avant de lancer l'app

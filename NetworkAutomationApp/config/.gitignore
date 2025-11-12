@@ -1,0 +1,4 @@
+# Ignore sensitive configuration files inside config/
+*.local
+secrets.*
+credentials.*

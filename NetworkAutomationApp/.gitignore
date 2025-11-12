@@ -1,39 +1,50 @@
-# Environnement Python
+# Python virtualenvs
 venv/
 env/
+*.venv
+
+# Byte-compiled / cache
 __pycache__/
 *.py[cod]
 *$py.class
-*.so
-.Python
 
-# Fichiers de configuration sensibles
+# Local config / secrets
+*.env
+.env.*
 devices.yaml.local
+secrets.yml
 *.key
 *.pem
 
-# Fichiers de sortie
+# Output / generated
 backups/*
 reports/*
 logs/*
 dashboards/*.html
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Système
-.DS_Store
-Thumbs.db
-
-# Tests
-.pytest_cache/
-.coverage
-htmlcov/
-
-# Distribution
+# Distribution / build
 build/
 dist/
 *.egg-info/
+
+# Frontend
+frontend/node_modules/
+frontend/build/
+frontend/.env.local
+
+# IDEs / editors
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+*.swp
+*~ 
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tests / coverage
+.pytest_cache/
+.coverage
+htmlcov/
