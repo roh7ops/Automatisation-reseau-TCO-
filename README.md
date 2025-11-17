@@ -207,15 +207,14 @@ AutomatisationReseau/
 │   ├── reports/                   # Rapports générés (.txt → .pdf)
 │   ├── dashboards/                # Dashboards HTML/Plotly
 │   ├── logs/                      # Logs application
-│   ├── frontend/                  # React App
-│   │   ├── src/
-│   │   │   ├── App.js             # Composant principal
-│   │   │   ├── api.js             # Appels API
-│   │   │   ├── index.css          # Styles globaux
-│   │   ├── public/
-│   │   ├── package.json
-│   │   ├── package-lock.json
-│   ├── venv/                      # Environnement Python (git-ignored)
+├── frontend/                  # React App
+│   ├── src/
+│   │   ├── App.js             # Composant principal
+│   │   ├── api.js             # Appels API
+│   │   ├── index.css          # Styles globaux
+│   ├── public/
+│   ├── package.json
+│   ├── package-lock.json
 ```
 
 ---
